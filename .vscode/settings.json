@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "config.h": "c",
+        "kernel.h": "c",
+        "memory.h": "c",
+        "terminal.h": "c",
+        "interrupt.h": "c",
+        "isr.h": "c",
+        "io.h": "c",
+        "pic.h": "c",
+        "heap.h": "c",
+        "kheap.h": "c",
+        "stdbool.h": "c",
+        "paging.h": "c",
+        "pmm.h": "c",
+        "varargs.h": "c",
+        "stdarg.h": "c",
+        "pagetable.h": "c",
+        "pagedirectory.h": "c",
+        "irq.h": "c",
+        "string.h": "c"
+    }
+}
