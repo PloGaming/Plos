@@ -4,7 +4,6 @@
 
 void timer(Registers *regs)
 {
-	printf(".");
 	return;
 }
 

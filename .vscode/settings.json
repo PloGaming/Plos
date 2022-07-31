@@ -19,6 +19,7 @@
         "pagetable.h": "c",
         "pagedirectory.h": "c",
         "irq.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "prekernel.h": "c"
     }
 }

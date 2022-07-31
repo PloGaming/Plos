@@ -23,7 +23,7 @@ stack_top:
 section .text
 
 global _start ; Esporta il simbolo in questa maniera possiamo compilare senza errori
-extern kmain ; Importiamo il simbolo da file, questo é il nome del main del kernel
+extern prekernel ; Importiamo il simbolo da file, questo é il nome del main del kernel
 
 ; Da questo momento ci troviamo in modalita protetta 32 bit,
 ; gli interrupts sono disabilitati, il paging e disabilitato
@@ -58,7 +58,7 @@ _start:
 
     ; Entriamo nel kernel
 	push ebx ; Contiene l'indirizzo fisica di una struttura dati multiboot
-    call kmain
+    call prekernel
 
     ; Quando torniamo dal kernel non facciamo nulla
     jmp $

@@ -1,10 +1,4 @@
-#include <memory/memory.h>
-#include <memory/allocator/kheap.h>
 #include <memory/paging/pageTable.h>
-#include <terminal/terminal.h>
-#include <interrupts/isr.h>
-#include <kernel.h>
-#include <io/io.h>
 
 void pte_add_flags(pte *entry, uint32_t flags)
 {

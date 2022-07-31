@@ -19,4 +19,5 @@ typedef uint32_t pte;
 void pte_add_flags(pte *entry, uint32_t flags);
 void pte_clear_flags(pte *entry, uint32_t flags);
 void pte_set_addr(pte *entry, uint32_t addr);
+
 #endif
