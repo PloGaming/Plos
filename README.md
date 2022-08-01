@@ -38,7 +38,7 @@
 - [ ] Aggiungi supporto per la tastiera
 - [ ] Implementa un file system
 
-##### Seconda parte - User mode development
+#### Seconda parte - User mode development
 - [ ] Passare ad user mode
 	- [ ] Aggiungere user mode entries nella gdt
 	- [ ] Aggiungere un tss alla gdt
@@ -51,7 +51,7 @@
 - [ ] Creare Fork() ed Execute()
 - [ ] Implementare una shell
 
-##### Terza parte - Aggiungere funzioni al sistema operativo
+#### Terza parte - Aggiungere funzioni al sistema operativo
 - [ ] Creare una thread API
 - [ ] Aggiungere la gestione del tempo 
 - [ ] Implementare multithreading
