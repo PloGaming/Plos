@@ -59,6 +59,4 @@
 - [ ] Aggiungere networking
 - [ ] Implementare il supporto per i suoni
 
-
-
-### End
+# FIGA IL CERE
