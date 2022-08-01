@@ -20,6 +20,7 @@
         "pagedirectory.h": "c",
         "irq.h": "c",
         "string.h": "c",
-        "prekernel.h": "c"
+        "prekernel.h": "c",
+        "vmm.h": "c"
     }
 }

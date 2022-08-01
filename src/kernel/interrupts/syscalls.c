@@ -4,7 +4,7 @@
 
 void timer(Registers *regs)
 {
-	return;
+	printf(".");
 }
 
 void keyPress(Registers *regs)

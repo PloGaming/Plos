@@ -2,6 +2,7 @@
 #include <interrupts/isr.h>
 #include <interrupts/interrupt.h>
 #include <terminal/terminal.h>
+#include <strings/string.h>
 #include <stddef.h>
 #include <kernel.h>
 #include <memory/memory.h>

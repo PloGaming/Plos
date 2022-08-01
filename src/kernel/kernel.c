@@ -16,10 +16,13 @@ void kmain()
 
     // Inizializzazione dell'IDT (Interrupt descriptor table)
     idt_table_init();
+
     // Inizizializzazione degli ISR (Interrupt service routine) : Interrupt software
     ISR_Initialize();
+
     // Inizializzazione degli IRQ (Interrupt request) : Interrupt hardware
     IRQ_Initialize();
+
     // Aggiunta degli interrupt
     register_syscalls();
 }

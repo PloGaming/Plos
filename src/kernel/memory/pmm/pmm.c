@@ -131,8 +131,8 @@ void pmm_deinit_region(uint32_t base_addr, size_t size)
 // ha impostato come libere
 void pmm_init_available_regions(uint32_t _mmap_start, uint32_t _mmap_end)
 {
-	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)_mmap_start;
-	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)_mmap_end;
+	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)(_mmap_start + 0xC0000000);
+	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)(_mmap_end + 0xC0000000);
 
 	printf("Elenco regioni di memoria trovati:\n");
 	// Loop per ogni regione di memoria
@@ -146,7 +146,6 @@ void pmm_init_available_regions(uint32_t _mmap_start, uint32_t _mmap_end)
 		{
 			printf("Regione LIBERA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
 			pmm_init_region((uint32_t)mmap_start->addr, (size_t)mmap_start->len);
-
 			continue;
 		}
 		printf("Regione RISERVATA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
@@ -179,7 +178,6 @@ void pmm_deinit_kernel()
 
 	// Impostiamo come occupato le regioni del kernel e della bitmap
 	pmm_deinit_region((uint32_t)&kernel_start, kernel_size_aligned);
-	pmm_deinit_region((uint32_t)&kernel_end, pmm_bitmap_size_aligned);
 }
 
 void *pmm_alloc_block()

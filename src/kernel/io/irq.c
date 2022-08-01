@@ -3,6 +3,7 @@
 #include "io.h"
 #include <stddef.h>
 #include <terminal/terminal.h>
+#include <strings/string.h>
 
 IRQHandler IRQHandlers[16];
 

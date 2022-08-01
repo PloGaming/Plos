@@ -7,22 +7,28 @@ ENTRY(_start)
 
 SECTIONS
 {
-    /*
-        Tutto il codice di tutti i file .c e dell'UNICO file .asm kernel.asm verra
-        messo ad 1MB
-    */
     . = 1M;
+    
+    .multiboot.data : {
+            *(.multiboot.data)
+    }
+
+    .multiboot.text : {
+           *(.multiboot.text)
+    }
+
+    . += 0xC0000000;
     kernel_start = .;
-    .text : ALIGN(4096)
+    
+    .text ALIGN(4K) : AT (ADDR (.text) - 0xC0000000)
     {
-        *(.multiboot)
         *(.text)
     }
 
     /*
         static costants read-only data section, inserita subito dopo il codice del kernel
     */
-    .rodata : ALIGN(4096)
+    .rodata ALIGN(4K) : AT (ADDR (.rodata) - 0xC0000000)
     {
         *(.rodata)
     }
@@ -30,7 +36,7 @@ SECTIONS
     /*
         data section, contiene variabile inizializzate statiche (es variabili globali o locali statiche)
     */
-    .data : ALIGN(4096)
+    .data ALIGN(4K) : AT (ADDR (.data) - 0xC0000000)
     {
         *(.data)
     }
@@ -38,10 +44,11 @@ SECTIONS
     /*
         bss section, contiene variabili non inizializzate statiche (o globali)
     */
-    .bss : ALIGN(4096)
+    .bss ALIGN(4K) : AT (ADDR( .bss) - 0xC0000000)
     {
         *(COMMON)
         *(.bss)
+        *(.bootstrap_stack)
     }
 
     /*
@@ -50,7 +57,7 @@ SECTIONS
         Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
         perfettamente per funzionare mentre asm no
     */
-    .asm : ALIGN(4096)
+    .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
     {
         *(.asm)
     }

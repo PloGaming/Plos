@@ -28,18 +28,15 @@ OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o 
 all: bin/kernel linker.ld
 	./iso.sh
 
-bin/boot.bin: src/boot/boot.asm
-	nasm -f bin $< -o $@
-
 bin/kernel: $(OBJS)
 	$(LD) -g -relocatable $(OBJS) -o bin/kernelfull.o
 	$(CC) $(CFLAGS) -T linker.ld -o $@ -ffreestanding -O0 -nostdlib bin/kernelfull.o
 
-bin/kernel.o: src/kernel/kernel.c
-	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
-
 bin/GRUB.asm.o: src/GRUB/boot.asm
 	nasm -f elf -g $< -o $@
+
+bin/kernel.o: src/kernel/kernel.c
+	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 bin/idt_load.asm.o: src/kernel/interrupts/idt_load.asm
 	nasm -f elf -g $< -o $@
@@ -106,7 +103,6 @@ debug: all
 
 clean:
 	rm -Rf $(OBJS)
-	rm -Rf bin/boot.bin
 	rm -Rf bin/kernel
 	rm -Rf bin/kernelfull.o
 	rm -Rf build/PlOS.iso

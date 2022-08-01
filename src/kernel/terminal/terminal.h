@@ -8,7 +8,7 @@
 #define VGA_HEIGTH 25
 #define WHITE_ON_BLUE 0x1f
 
-#define VGA_START_ADDRESS 0xB8000
+#define VGA_START_ADDRESS 0xC03FF000
 
 struct terminal_position
 {

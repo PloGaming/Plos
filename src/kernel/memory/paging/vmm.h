@@ -52,7 +52,6 @@ pte *vmm_ptable_get_entry(struct page_table *p, virtual_addr addr);
 bool vmm_switch_pdirectory(struct page_directory *dir);
 struct page_directory *vmm_get_directory();
 void vmm_map_page(void *phys, void *virt);
-bool vmm_initialize();
 
 // Funzioni utili per gestire il paging
 extern uint32_t read_cr0();
