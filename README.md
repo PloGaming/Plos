@@ -1,4 +1,4 @@
-# PlOS
+# PLOS
 
 ![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOAsaricerkn1OjqMX8KsE4JZkMvvNm8eAfQ&usqp=CAU)
 
