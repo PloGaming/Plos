@@ -10,7 +10,7 @@
 
 # Progresso
 
-##### Prima parte - kernel development
+#### Prima parte - kernel development
 - [x] GRUB multiboot
 - [x] Setup iniziale
 - [x] Setup gdt
