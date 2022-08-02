@@ -5,17 +5,19 @@
 #include <terminal/terminal.h>
 #include <strings/string.h>
 
-IRQHandler IRQHandlers[16];
+static IRQHandler IRQHandlers[16];
 
 void IRQ_RegisterHandler(int irq, IRQHandler handler)
 {
+    printf("IRQ INTERRUPT %d, ADDR %x\n", irq, handler);
+    printf("IRQ HANDLER ADDR: %x\n", IRQHandlers);
     IRQHandlers[irq] = handler;
 }
 
 void IRQ_Handler(Registers *regs)
 {
     int irq = regs->interrupt - PIC1_OFFSET;
-
+    printf("Ecum chi");
     if (IRQHandlers[irq] != NULL)
     {
         IRQHandlers[irq](regs);

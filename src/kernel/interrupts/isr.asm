@@ -5,6 +5,7 @@ section .asm
 KERNEL_DATA_SEGMENT equ 0x10
 
 extern ISR_Master_Handler
+global isr_common
 
 ; Macro che definisce tutti gli isr senza un codice errore
 %macro ISR_NOERRORCODE 1
@@ -42,7 +43,7 @@ isr_common:
     mov gs, ax
 
     push esp ; passiamo un puntatore allo stack del c
-    
+
     ; Codice c che gestisce gli interrupt
     call ISR_Master_Handler
     

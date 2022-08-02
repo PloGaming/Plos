@@ -18,10 +18,10 @@ SECTIONS
     }
 
     . += 0xC0000000;
-    kernel_start = .;
-    
+     
     .text ALIGN(4K) : AT (ADDR (.text) - 0xC0000000)
     {
+        kernel_start = .;
         *(.text)
     }
 
@@ -44,6 +44,12 @@ SECTIONS
     /*
         bss section, contiene variabili non inizializzate statiche (o globali)
     */
+
+    .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
+    {
+        *(.asm)
+    }
+
     .bss ALIGN(4K) : AT (ADDR( .bss) - 0xC0000000)
     {
         *(COMMON)
@@ -57,10 +63,7 @@ SECTIONS
         Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
         perfettamente per funzionare mentre asm no
     */
-    .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
-    {
-        *(.asm)
-    }
+    
     kernel_end = .;
 }
 

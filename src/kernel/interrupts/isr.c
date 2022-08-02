@@ -8,7 +8,7 @@
 #include <memory/memory.h>
 #include <io/pic.h>
 
-ISRHandler handlers[256];
+static ISRHandler handlers[256];
 
 char *g_Exceptions[] = {
     "Divide by zero error\n",
@@ -47,6 +47,7 @@ char *g_Exceptions[] = {
 void ISR_Initialize()
 {
     memset(handlers, '\0', sizeof(handlers));
+
     ISR_InitializeGates();
     for (int i = 0; i < 256; i++)
     {
@@ -64,6 +65,7 @@ void ISR_RegisterHandler(int interrupt, ISRHandler handler)
 
 void ISR_Master_Handler(Registers *regs)
 {
+    printf("MASTER HANDLER AT %x\n", ISR_Master_Handler);
     if (handlers[regs->interrupt] != NULL)
     {
         handlers[regs->interrupt](regs);

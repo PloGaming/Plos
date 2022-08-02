@@ -9,7 +9,7 @@ LD=$(CROSS_PATH)/i686-elf-ld
 # 4) Trasformare i warnings in errori
 # 5) Abilitare i simboli di debug (caricabili da kernelfull.o a partire da 0x0100000)
 # 6) Disabilitare l'ottimizzazione del codice
-CFLAGS=-g -ffreestanding -falign-jumps -falign-functions -falign-labels \
+CFLAGS=-g -ggdb -ffreestanding -falign-jumps -falign-functions -falign-labels \
 	-falign-loops -fstrength-reduce -fomit-frame-pointer \
 	-finline-functions -Wno-unused-function -fno-builtin -Werror \
 	-Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib \

@@ -192,16 +192,62 @@ four:
 
     ; Aggiungiamo 0xC0000000 alla memory map di GRUB 
     ; perchè adesso stiamo usando paging
+
+; Una volta abilitato il paging dobbiamo ricaricare la gdt
+.reload_gdt_page:
+
+    lgdt [page_gdt_descriptor] ; gdtr viene impostato
+	jmp PAGE_CODE_SEG:page_resume
+
+page_resume:
+
     add ebx, 0xC0000000
     push ebx 
     call prekernel
-    mov eax, 0xdeadbeef
 
     ; Quando torniamo dal kernel non facciamo nulla
     cli
 stop:
     hlt
     jmp stop
+
+; Questo è l'inizio della gdt table
+page_gdt_table_start:
+
+; La prima entry della gdt deve essere nulla
+page_gdt_null_entry:
+    dd 0x0
+    dd 0x0
+
+; La entry per il segmento code del kernel (0x0 - 0xxfffffff)
+page_gdt_code_entry:
+    dw 0xffff
+    dw 0x0
+    db 0x0
+    db 10011010b
+    db 11001111b
+    db 0x0
+
+; La entry per il segmento data del kernel (0x0 - 0xxfffffff)
+page_gdt_data_entry:
+    dw 0xffff
+    dw 0x0
+    db 0x0
+    db 10010010b
+    db 11001111b
+    db 0x0
+
+; fine gdt table
+page_gdt_table_finish:
+
+; il registro gdtr deve puntare a questo
+page_gdt_descriptor:
+    dw page_gdt_table_finish - page_gdt_table_start - 1
+    dd page_gdt_table_start
+
+; indice per il segmento Code and Data
+PAGE_CODE_SEG equ page_gdt_code_entry - page_gdt_table_start
+PAGE_DATA_SEG equ page_gdt_data_entry - page_gdt_table_start
 
 ; Per evitare problemi di allineamento con il codice in c 
 ;(dato che questo file anche se .asm verra compilato vicino al codice c)
