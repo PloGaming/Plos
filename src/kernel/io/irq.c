@@ -4,29 +4,25 @@
 #include <stddef.h>
 #include <terminal/terminal.h>
 #include <strings/string.h>
+#include <memory/memory.h>
 
 static IRQHandler IRQHandlers[16];
 
 void IRQ_RegisterHandler(int irq, IRQHandler handler)
 {
-    printf("IRQ INTERRUPT %d, ADDR %x\n", irq, handler);
-    printf("IRQ HANDLER ADDR: %x\n", IRQHandlers);
     IRQHandlers[irq] = handler;
 }
 
 void IRQ_Handler(Registers *regs)
 {
     int irq = regs->interrupt - PIC1_OFFSET;
-    printf("Ecum chi");
     if (IRQHandlers[irq] != NULL)
     {
         IRQHandlers[irq](regs);
     }
     else
     {
-        print("IRQ non gestito!\n");
-        char str[3] = {(char)irq, '\n', '\0'};
-        print(str);
+        printf("IRQ non gestito! %d\n", irq);
     }
 
     PIC_sendEOI(irq);
@@ -35,10 +31,10 @@ void IRQ_Handler(Registers *regs)
 void IRQ_Initialize()
 {
     PIC_init();
+    memset(IRQHandlers, '\0', sizeof(IRQHandlers));
     for (int i = 0; i < 16; i++)
     {
         ISR_RegisterHandler(PIC1_OFFSET + i, IRQ_Handler);
     }
-    EnableInterrupts();
     print("[INFO] PIC e IRQs inizializzati\n");
 }

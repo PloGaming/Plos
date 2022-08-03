@@ -25,6 +25,9 @@ void kmain()
 
     // Aggiunta degli interrupt
     register_syscalls();
+
+    // Abilita gli interrupt
+    EnableInterrupts();
 }
 
 // Funzione Panic del kernel

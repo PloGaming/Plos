@@ -201,12 +201,19 @@ four:
 
 page_resume:
 
+     ; Setup di tutti i registri segmento riguardanti i dati
+    mov ax, PAGE_DATA_SEG
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
     add ebx, 0xC0000000
     push ebx 
     call prekernel
 
     ; Quando torniamo dal kernel non facciamo nulla
-    cli
 stop:
     hlt
     jmp stop

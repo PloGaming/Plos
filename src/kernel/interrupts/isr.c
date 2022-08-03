@@ -65,7 +65,6 @@ void ISR_RegisterHandler(int interrupt, ISRHandler handler)
 
 void ISR_Master_Handler(Registers *regs)
 {
-    printf("MASTER HANDLER AT %x\n", ISR_Master_Handler);
     if (handlers[regs->interrupt] != NULL)
     {
         handlers[regs->interrupt](regs);
