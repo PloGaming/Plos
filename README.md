@@ -30,9 +30,9 @@
 	- [x] Inizializza pmm
 	- [x] Inizializza tutte le regioni di spazio FREE
 	- [x] Rimuovi la regione di spazio contenente il kernel
-- [x] Implementa paging
-	- [x] Implementa il vmm
+- [ ] Implementa paging
 	- [x] Sposta il kernel in higher half
+	- [ ] Implementa il vmm
 - [ ] Implementa un heap
 	- [ ] Implementa malloc() e free()
 - [ ] Aggiungi supporto per la tastiera
