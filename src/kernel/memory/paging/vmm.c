@@ -177,3 +177,13 @@ void vmm_unmap_page(void *virt_address)
 	// Rimuove le flags
 	pte_clear_flags(page, x86_PTE_PRESENT);
 }
+
+// Inizializza la vmm impostando come page directory
+// quella impostata precendentemente durante il boot
+void vmm_initialize()
+{
+	extern uint8_t *page_structures;
+	struct page_directory *initial_page_dir = (struct page_directory *)&page_structures;
+
+	vmm_switch_pdirectory((struct page_directory *)((void *)initial_page_dir - 0xC0000000));
+}

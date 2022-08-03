@@ -8,6 +8,7 @@
 #include <strings/string.h>
 #include <interrupts/syscalls.h>
 #include <prekernel/prekernel.h>
+#include <memory/paging/vmm.h>
 
 void kmain()
 {

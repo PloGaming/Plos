@@ -41,8 +41,12 @@ SECTIONS
         *(.data)
     }
 
+    
     /*
-        bss section, contiene variabili non inizializzate statiche (o globali)
+        Tutti i file .asm devono avere section .asm all'inizio in questa maniera verranno inseriti come ultimi
+        elementi all'interno della memoria.
+        Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
+        perfettamente per funzionare mentre asm no
     */
 
     .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
@@ -50,19 +54,19 @@ SECTIONS
         *(.asm)
     }
 
+    /*
+        bss section, contiene variabili non inizializzate statiche (o globali)
+    */
+    
     .bss ALIGN(4K) : AT (ADDR( .bss) - 0xC0000000)
     {
         *(COMMON)
+        page_structures = .;
         *(.bss)
         *(.bootstrap_stack)
     }
 
-    /*
-        Tutti i file .asm devono avere section .asm all'inizio in questa maniera verranno inseriti come ultimi
-        elementi all'interno della memoria.
-        Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
-        perfettamente per funzionare mentre asm no
-    */
+    
     
     kernel_end = .;
 }

@@ -135,11 +135,10 @@ three:
     jmp eax
 
     cli
-    sto:
-        hlt
-        jmp sto
+sto:
+    hlt
+    jmp sto
  
-
 ; Questo è l'inizio della gdt table
 gdt_table_start:
 
@@ -181,6 +180,7 @@ DATA_SEG equ gdt_data_entry - gdt_table_start
 [section .text]
 
 extern prekernel ; Importiamo il simbolo da file, questo é il nome del main del kernel
+global BREAKPOINT
 
 ; A questo punto il paging è impostato correttamente
 four:
@@ -189,9 +189,6 @@ four:
     mov [boot_page_directory + 0], eax
     mov ecx, cr3
     mov cr3, ecx
-
-    ; Aggiungiamo 0xC0000000 alla memory map di GRUB 
-    ; perchè adesso stiamo usando paging
 
 ; Una volta abilitato il paging dobbiamo ricaricare la gdt
 .reload_gdt_page:
@@ -209,6 +206,8 @@ page_resume:
     mov gs, ax
     mov ss, ax
 
+    ; Aggiungiamo 0xC0000000 alla memory map di GRUB 
+    ; perchè adesso stiamo usando paging
     add ebx, 0xC0000000
     push ebx 
     call prekernel

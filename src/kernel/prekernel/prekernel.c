@@ -2,6 +2,7 @@
 #include <kernel.h>
 #include <terminal/terminal.h>
 #include <memory/pmm/pmm.h>
+#include <memory/paging/vmm.h>
 #include <strings/string.h>
 #include <memory/paging/vmm.h>
 
@@ -30,6 +31,9 @@ void prekernel(multiboot_info_t *boot_info)
 	pmm_init(memSize, (uint32_t *)(0xC0000000 + kernel_size));
 	pmm_init_available_regions(boot_info->mmap_addr, boot_info->mmap_addr + boot_info->mmap_length);
 	pmm_deinit_region(0x00, 0x0400000);
+
+	// Inizializzazione virtual memory manager
+	vmm_initialize();
 
 	// Chiamata al kernel main
 	kmain();
