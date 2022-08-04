@@ -35,7 +35,6 @@ align 4096
         resb 4096 ; 4kb
     ; Se il kernel > 4 MB è necessario aggiungere altre page_tables
 
-
 [section .multiboot.text]
 
 ; Da questo momento ci troviamo in modalita protetta 32 bit,

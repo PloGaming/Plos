@@ -34,6 +34,7 @@
 	- [x] Implementa il vmm
 	- [x] Implementa recursive paging
 	- [x] Sposta il kernel in higher half
+	- [ ] Implementa il vmm
 - [ ] Implementa un heap
 	- [ ] Implementa malloc() e free()
 - [ ] Aggiungi supporto per la tastiera
