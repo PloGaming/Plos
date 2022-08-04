@@ -138,9 +138,9 @@ three:
     mov eax, (boot_page_directory - 0xC0000000)
     mov cr3, eax 
 
-    ; Abilitiamo il paging
+    ; Abilitiamo il paging con il WP bit
     mov eax, cr0
-    or eax, 0x80000000
+    or eax, 0x80010000
     mov cr0, eax
 
     ; Entriamo nell'Higher half kernel

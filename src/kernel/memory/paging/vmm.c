@@ -5,95 +5,75 @@
 
 struct page_directory *current_dir = NULL;
 
-// Funzione che alloca una pagina virtuale
-// e la imposta come presente in una
-// determinata page Table
-bool vmm_alloc_page(pte *page)
+// Alloca una pagina dato un puntatore virtuale ad una pte
+bool vmm_alloc_page(pte *entry)
 {
-	// Allochiamo un blocco fisico di memoria
-	void *block = pmm_alloc_block();
-	if (!block)
-	{
+	if (!entry)
 		return false;
-	}
 
-	// Impostiamo il blocco nella page table entry data
-	pte_set_addr(page, (physical_addr)block);
+	// Alloca lo spazio per la nostra pte
+	physical_addr page_addr = (uint32_t)pmm_alloc_block();
 
-	// Impostiamo la pagina come presente
-	pte_add_flags(page, x86_PTE_PRESENT);
+	if (!page_addr)
+		return false;
+
+	// Impostiamo il frame fisico
+	pte_set_addr(entry, page_addr);
+
+	// Impostiamo le relative flags
+	pte_add_flags(entry, x86_PTE_PRESENT | x86_PTE_WRITABLE);
 
 	return true;
 }
 
-// Funzione che dealloca una pagina
-// e la imposta come assente
-void vmm_free_page(pte *page)
+// Libera una pagina dato un un puntatore virtuale ad una pte
+bool vmm_free_page(pte *entry)
 {
-	// Otteniamo l'indirizzo del blocco
-	void *block = (void *)PAGE_PHYSICAL_ADDRESS(page);
+	if (!entry)
+		return false;
 
-	// Se l'indirizzo è valido
-	if (block)
-	{
-		// Deallochiamo il blocco nella memoria fisica
-		pmm_free_block(block);
-	}
+	// Deallochiamo il blocco
+	pmm_free_block((void *)PAGE_GET_ADDRESS(entry));
 
-	// Lo impostiamo come non presente
-	pte_clear_flags(page, x86_PTE_PRESENT);
+	// Imposta il frame e tutte le flag della pte come vuote
+	*entry = 0;
+
+	return true;
 }
 
-// Funzione che restituisce una determinata page table entry
-// data la page table e un indirizzo virtuale
-pte *vmm_ptable_get_entry(struct page_table *p, virtual_addr addr)
+// Restituisce l'indirizzo virtuale di una page directory entry data un entry num (0 - 1023)
+pde *vmm_directory_get_entry(uint32_t entry_num)
 {
-	if (p)
-	{
-		// Entra all'interno delle entries
-		// estrae l'index della pte dall'indirizzo
-		// e la usa per ottenere il pte
-		return &p->entries[PAGE_TABLE_INDEX(addr)];
-	}
-	return NULL;
+	// Se l'entry_num non é valida ritorniamo un puntatore nullo
+	if (entry_num > 1023 || entry_num < 0)
+		return NULL;
+
+	uint32_t offset = entry_num * PAGE_SIZE;
+
+	return (pde *)((void *)LAST_4MB_ADDRESS_SPACE + offset);
 }
 
-// Funzione che restituisce una determinata page directory entry
-// data la page directory e un indirizzo virtuale
-pde *vmm_pdirectory_get_entry(struct page_directory *p, virtual_addr addr)
+// Restituisce l'indirizzo virtuale di una page table entry data un entry num (0 - 1023) ed una directory entry valida
+pte *vmm_table_get_entry(pde *directory_entry, uint32_t entry_num)
 {
-	if (p)
-	{
-		p->entries[PAGE_DIRECTORY_INDEX(addr)];
-	}
-	return NULL;
-}
+	// Se l'entry_num non é valida ritorniamo un puntatore nullo
+	if (entry_num > 1023 || entry_num < 0 || !directory_entry)
+		return NULL;
 
-// Funzione che restituisce una page dato un indirizzo virtuale
-pte *vmm_get_page(virtual_addr addr)
-{
-	// Ottieni la page directory corrente
-	struct page_directory *pd = current_dir;
+	// Ogni entry ha una dimensione di 4 byte, percio moltiplichiamo l'index
+	// Per questo
+	uint32_t offset = entry_num * 4;
 
-	// Ottieni la page table nella page directory
-	pde *dir_entry = vmm_pdirectory_get_entry(pd, addr);
-	struct page_table *table = (struct page_table *)PAGE_PHYSICAL_ADDRESS(dir_entry);
-
-	// Ottieni la page
-	pte *table_entry = vmm_ptable_get_entry(table, addr);
-
-	return table_entry;
+	return (pte *)((void *)directory_entry + offset);
 }
 
 // Funzione che imposta una page_directory passando per parametro
-// l'indirizzo fisico di essa
+// l'indirizzo FISICO di essa
 bool vmm_switch_pdirectory(struct page_directory *dir)
 {
 	// Controllo che l'indirizzo sia valido
 	if (!dir)
-	{
 		return false;
-	}
 
 	current_dir = dir;
 
@@ -108,72 +88,6 @@ bool vmm_switch_pdirectory(struct page_directory *dir)
 struct page_directory *vmm_get_directory()
 {
 	return current_dir;
-}
-
-// Funzione che "collega" un frame fisico ad una
-// page virtuale, inserendolo all'interno di una page table
-void vmm_map_page(void *phys, void *virt)
-{
-	// Ottieni la page directory
-	struct page_directory *pageDir = vmm_get_directory();
-
-	// Ottieni la page directory entry
-	pde *entry = vmm_pdirectory_get_entry(pageDir, (virtual_addr)virt);
-
-	// Se la entry nella page directory non esiste dobbiamo
-	// crearla prima di usarla
-	if ((*entry & x86_PDE_PRESENT) != x86_PDE_PRESENT)
-	{
-		// Dato che questa entry nella page directory
-		// non esiste, non esiste neanche la page table
-		// corrispondente, quindi dobbiamo crearla
-		struct page_table *table = (struct page_table *)(pmm_alloc_block());
-
-		// Controllo se indirizzo è valido
-		if (!table)
-		{
-			return;
-		}
-
-		// "Puliamo l'intera page table"
-		memset(table, '\0', sizeof(struct page_table));
-
-		// Prima di inserire la nuova page table dobbiamo
-		// creare prima una page directory entry
-		pde *directory_entry = vmm_pdirectory_get_entry(pageDir, (virtual_addr)virt);
-
-		// Ora modifichiamo questa pde
-		pde_add_flags(directory_entry, x86_PDE_PRESENT | x86_PDE_WRITABLE);
-
-		// La pde deve puntare alla nostra pte
-		pde_set_addr(entry, (physical_addr)table);
-	}
-
-	// Ottieni la page_table
-	struct page_table *table = (struct page_table *)PAGE_PHYSICAL_ADDRESS(entry);
-
-	// Ottieni la page
-	pte *table_entry = vmm_ptable_get_entry(table, (virtual_addr)virt);
-
-	// Esegui il map
-	pte_set_addr(table_entry, (physical_addr)phys);
-
-	// Imposta la page come presente
-	pte_add_flags(table_entry, x86_PTE_PRESENT);
-}
-
-// Funzione che "scollega" un frame fisico
-// da una page virtuale
-void vmm_unmap_page(void *virt_address)
-{
-	// Otteniamo la page
-	pte *page = vmm_get_page((virtual_addr)virt_address);
-
-	// "Pulisce" l'indirizzo
-	pte_set_addr(page, 0);
-
-	// Rimuove le flags
-	pte_clear_flags(page, x86_PTE_PRESENT);
 }
 
 // Inizializza la vmm impostando come directory corrente

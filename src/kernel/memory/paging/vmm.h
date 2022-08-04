@@ -21,7 +21,7 @@ typedef uint32_t physical_addr;
 // Macro per estrarre le parti da un indirizzo virtuale
 #define PAGE_DIRECTORY_INDEX(x) (((x) >> 22) & 0x3ff)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3ff)
-#define PAGE_PHYSICAL_ADDRESS(x) ((*x) & ~0xfff) // ritorna solo l'indirizzo rimuovendo le flags
+#define PAGE_GET_ADDRESS(x) ((*x) & ~0xfff) // ritorna solo l'indirizzo rimuovendo le flags
 
 // In una page table ci sono 1024 entry ed ognuna descrive
 // 4096 byte (1024 * 4096 = 4MB di memoria)
@@ -40,6 +40,8 @@ typedef uint32_t physical_addr;
 // Definisce la costante higher half
 #define HIGHER_HALF_PAGING 0xC0000000
 
+#define LAST_4MB_ADDRESS_SPACE 0xffc00000
+
 // Struttura per page_table
 struct page_table
 {
@@ -53,12 +55,12 @@ struct page_directory
 };
 
 // Funzioni per la vmm
-bool vmm_alloc_page(pte *e);
-void vmm_free_page(pte *e);
-pte *vmm_ptable_get_entry(struct page_table *p, virtual_addr addr);
+bool vmm_alloc_page(pte *entry);
+bool vmm_free_page(pte *entry);
+pde *vmm_directory_get_entry(uint32_t entry_num);
+pte *vmm_table_get_entry(pde *directory_entry, uint32_t entry_num);
 bool vmm_switch_pdirectory(struct page_directory *dir);
 struct page_directory *vmm_get_directory();
-void vmm_map_page(void *phys, void *virt);
 void vmm_initialize();
 
 // Funzioni utili per gestire il paging
