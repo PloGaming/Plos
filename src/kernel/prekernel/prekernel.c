@@ -4,11 +4,9 @@
 #include <memory/pmm/pmm.h>
 #include <memory/paging/vmm.h>
 #include <strings/string.h>
-#include <memory/paging/vmm.h>
 
 void prekernel(multiboot_info_t *boot_info)
 {
-
 	extern uint8_t *kernel_start; // Indirizzo dove il kernel inizia
 	extern uint8_t *kernel_end;	  // Indirizz dove il kernel finisce
 	size_t kernel_size = (size_t)&kernel_end - (size_t)&kernel_start;
@@ -28,11 +26,11 @@ void prekernel(multiboot_info_t *boot_info)
 	print_system_information(boot_info);
 
 	// Inizializzazione del pmm (Physical memory manager)
-	pmm_init(memSize, (uint32_t *)(0xC0000000 + kernel_size));
+	pmm_init(memSize, (uint32_t *)(HIGHER_HALF_PAGING + kernel_size));
 	pmm_init_available_regions(boot_info->mmap_addr, boot_info->mmap_addr + boot_info->mmap_length);
 	pmm_deinit_region(0x00, 0x0400000);
 
-	// Inizializzazione virtual memory manager
+	// Inizializzazione vmm
 	vmm_initialize();
 
 	// Chiamata al kernel main

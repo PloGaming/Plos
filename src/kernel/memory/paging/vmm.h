@@ -34,12 +34,19 @@ typedef uint32_t physical_addr;
 // Dimensione pagina standard (4kb)
 #define PAGE_SIZE 4096
 
-// Strutture per page_table e page_directory
+// La entry che permette la logica del paging ricorsivo
+#define DIRECTORY_RECURSIVE_ENTRY 1023
+
+// Definisce la costante higher half
+#define HIGHER_HALF_PAGING 0xC0000000
+
+// Struttura per page_table
 struct page_table
 {
 	pte entries[PAGES_PER_TABLE];
 };
 
+// Struttura per page_directory
 struct page_directory
 {
 	pde entries[TABLES_PER_DIR];

@@ -32,6 +32,7 @@
 	- [x] Rimuovi la regione di spazio contenente il kernel
 - [x] Implementa paging
 	- [x] Implementa il vmm
+	- [x] Implementa recursive paging
 	- [x] Sposta il kernel in higher half
 - [ ] Implementa un heap
 	- [ ] Implementa malloc() e free()

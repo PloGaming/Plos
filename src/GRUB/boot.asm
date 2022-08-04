@@ -40,18 +40,18 @@ align 4096
 
 ; Da questo momento ci troviamo in modalita protetta 32 bit,
 ; gli interrupts sono disabilitati, il paging e disabilitato
-; e lo stato della CPU e definito nello standard multiboot
+; e lo stato della CPU é definito nello standard multiboot
 _start:
 
-; Setup dello stack
+    ; Setup dello stack
 	mov esp, stack_top
 	mov ebp, esp
 
-    ; GRUB non garantisce l'effettivo caricamento della GDT percio dobbiamo farlo noi
+; GRUB non garantisce l'effettivo caricamento della GDT percio dobbiamo farlo noi
 .loadGDT:
     
     lgdt [gdt_descriptor] ; gdtr viene impostato
-	jmp CODE_SEG:resume
+	jmp CODE_SEG:resume ; long jump necessario per ricaricare cs
 
 resume:
 
@@ -63,13 +63,14 @@ resume:
     mov gs, ax
     mov ss, ax
 
+; Abilitazione A20 line tramite il metodo fast gate 
 .enableA20:
 
     in al, 0x92
     or al, 2
     out 0x92, al
 
-; Abilitazione paging per kernel higher half (3GB)
+; Abilitazione paging per kernel higher half (3GB 0xC0000000)
 .paging:
 
     ; Indirizzo fisico della page_table (Sottraiamo 0xC0000000 a causa del linker)
@@ -85,10 +86,9 @@ one:
     cmp esi, (kernel_end - 0xC0000000)
     jge three
 
-    ; edx conterra l'indirizzo dell'inzio del kernel
+    ; edx conterra l'indirizzo di una pagina del kernel
     mov edx, esi
-    ; edx ora è una pte con indirizzo quello dell'inizio del kernel
-    ; e impostata come presente e scrivibile
+    ; la pagina é impostata come presente e scrivibile
     or edx, 0x003
     ; Spostiamo nella page table la nostra page table entry
     mov [edi], edx
@@ -101,6 +101,8 @@ two:
     ; La dimensione di una pte è 4 bytes
     add edi, 4
     
+    ; Al termine del loop avremo una page_table contenente
+    ; tutte le pagine del kernel (il kernel inizia a 0x00100000 (1MB))
     loop one
 
 ; Ora eseguiamo il map del VGA buffer a 0xC03FF000
@@ -109,6 +111,7 @@ three:
     ; ma presente e scrivibile
     mov eax, 0x000B8003
 
+    ;modifichiamo la 1024esima table entry con l'indirizzo del VGA buffer
     mov [boot_page_table1 - 0xC0000000 + 1023 * 4],  eax
     
     ; Stiamo facendo un identity map del kernel (da 0 fino a 4 MB) in questa 
@@ -117,9 +120,20 @@ three:
     ; anche ad 0xC0000000 in questa maniera il kernel sara higher half
     ; (non ci servira piu la "lowe half" entry percio la elimineremo quando non sara piu necessaria)
 
+    ; eax sarà una pde, conterrà l'indirizzo fisico della page table e gli attributi (0x003)
     mov eax, (boot_page_table1 - 0xC0000000 + 0x003)
+
+    ; Lower half table impostata
     mov [boot_page_directory - 0xC0000000 + 0], eax
+
+    ; Higher half table impostata
     mov [boot_page_directory - 0xC0000000 + 768 * 4], eax
+
+    ; eax conterra l'indirizzo della page directory
+    mov eax, (boot_page_directory - 0xC0000000 + 0x003)
+
+    ; La 1023esima entry deve puntare alla page directory per recursive paging 
+    mov [boot_page_directory - 0xC0000000 + 1023 * 4], eax
 
     ; Impostiamo CR3 all'indirizzo della boot_page_directory
     mov eax, (boot_page_directory - 0xC0000000)
@@ -183,6 +197,7 @@ extern prekernel ; Importiamo il simbolo da file, questo é il nome del main del
 global BREAKPOINT
 
 ; A questo punto il paging è impostato correttamente
+; Il nostro kernel si trova a 0xC0100000
 four:
 
     mov eax, 0x00
@@ -207,7 +222,7 @@ page_resume:
     mov ss, ax
 
     ; Aggiungiamo 0xC0000000 alla memory map di GRUB 
-    ; perchè adesso stiamo usando paging
+    ; perchè adesso stiamo usando paging e l'indirizzo é sbagliato
     add ebx, 0xC0000000
     push ebx 
     call prekernel

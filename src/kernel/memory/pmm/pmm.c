@@ -1,4 +1,5 @@
 #include <memory/pmm/pmm.h>
+#include <memory/paging/vmm.h>
 #include <memory/memory.h>
 #include <strings/string.h>
 
@@ -131,8 +132,8 @@ void pmm_deinit_region(uint32_t base_addr, size_t size)
 // ha impostato come libere
 void pmm_init_available_regions(uint32_t _mmap_start, uint32_t _mmap_end)
 {
-	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)(_mmap_start + 0xC0000000);
-	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)(_mmap_end + 0xC0000000);
+	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)(_mmap_start + HIGHER_HALF_PAGING);
+	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)(_mmap_end + HIGHER_HALF_PAGING);
 
 	printf("Elenco regioni di memoria trovati:\n");
 	// Loop per ogni regione di memoria

@@ -64,10 +64,7 @@ pde *vmm_pdirectory_get_entry(struct page_directory *p, virtual_addr addr)
 {
 	if (p)
 	{
-		// Entra all'interno delle entries
-		// estrae l'index della pte dall'indirizzo
-		// e la usa per ottenere il pte
-		return &p->entries[PAGE_DIRECTORY_INDEX(addr)];
+		p->entries[PAGE_DIRECTORY_INDEX(addr)];
 	}
 	return NULL;
 }
@@ -88,7 +85,8 @@ pte *vmm_get_page(virtual_addr addr)
 	return table_entry;
 }
 
-// Funzione che imposta una page_directory
+// Funzione che imposta una page_directory passando per parametro
+// l'indirizzo fisico di essa
 bool vmm_switch_pdirectory(struct page_directory *dir)
 {
 	// Controllo che l'indirizzo sia valido
@@ -100,7 +98,7 @@ bool vmm_switch_pdirectory(struct page_directory *dir)
 	current_dir = dir;
 
 	// Impostiamo cr3 con il nuovo indirizzo
-	set_cr3((physical_addr)current_dir);
+	set_cr3((physical_addr)current_dir->entries);
 	printf("Page directory cambiata a: %x\n", read_cr3());
 
 	return true;
@@ -178,12 +176,17 @@ void vmm_unmap_page(void *virt_address)
 	pte_clear_flags(page, x86_PTE_PRESENT);
 }
 
-// Inizializza la vmm impostando come page directory
-// quella impostata precendentemente durante il boot
+// Inizializza la vmm impostando come directory corrente
+// Quella del boot
 void vmm_initialize()
 {
+	// Puntatore che si trova alla base della page dir creata durante il boot
 	extern uint8_t *page_structures;
+
+	// Page directory iniziale
 	struct page_directory *initial_page_dir = (struct page_directory *)&page_structures;
 
-	vmm_switch_pdirectory((struct page_directory *)((void *)initial_page_dir - 0xC0000000));
+	// Impostiamo la page directory corrente, dato che il paging é attivo sottraiamo
+	// 0xC0000000 per ottenere l'indirizzo fisico
+	vmm_switch_pdirectory((struct page_directory *)((void *)initial_page_dir - HIGHER_HALF_PAGING));
 }
