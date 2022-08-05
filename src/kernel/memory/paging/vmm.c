@@ -168,7 +168,6 @@ bool vmm_switch_pdirectory(struct page_directory *dir)
 
 	// Impostiamo cr3 con il nuovo indirizzo
 	set_cr3((physical_addr)current_dir->entries);
-	printf("Page directory cambiata a: %x\n", read_cr3());
 
 	return true;
 }

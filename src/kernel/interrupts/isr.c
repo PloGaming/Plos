@@ -54,7 +54,6 @@ void ISR_Initialize()
         idt_enable_gate(i);
     }
     idt_disable_gate(0x80);
-    print("[INFO] ISR Inizializzati!\n");
 }
 
 void ISR_RegisterHandler(int interrupt, ISRHandler handler)

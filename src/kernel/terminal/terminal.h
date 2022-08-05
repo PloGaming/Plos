@@ -26,5 +26,8 @@ void terminal_putstring(char *string);
 void terminal_clear_screen();
 void terminal_init();
 void print_char(char character);
+void get_cmd(char *buf, int n);
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+void update_cursor(int x, int y);
 
 #endif

@@ -9,5 +9,6 @@
 
 int strlen(char *string);
 void printf(char *format, ...);
+int strcmp(const char *str1, const char *str2);
 
 #endif

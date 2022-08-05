@@ -3,6 +3,7 @@
 #include <kernel.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <devices/keyboard.h>
 
 struct terminal_position terminal;
 
@@ -95,12 +96,14 @@ void terminal_putstring(char *string)
         {
             terminal_add_newLine();
         }
-    do_stuff:
+
         position = (terminal.y * VGA_WIDTH) + terminal.x++;
         catch (position);
         terminal_putchar(position, *(string + i), WHITE_ON_BLUE);
         catch (position);
     }
+
+    update_cursor(terminal.x, terminal.y);
 }
 
 void print_char(char character)
@@ -129,4 +132,116 @@ void terminal_init()
     clear_screen();
     terminal.x = 0;
     terminal.y = 0;
+    enable_cursor(terminal.x, terminal.y);
+}
+
+// Abilita il cursore
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+{
+    outbyte(0x3D4, 0x0A);
+    outbyte(0x3D5, (insbyte(0x3D5) & 0xC0) | cursor_start);
+
+    outbyte(0x3D4, 0x0B);
+    outbyte(0x3D5, (insbyte(0x3D5) & 0xE0) | cursor_end);
+}
+
+// Sposta il cursore
+void update_cursor(int x, int y)
+{
+    uint16_t pos = ++y * VGA_WIDTH + x;
+
+    outbyte(0x3D4, 0x0F);
+    outbyte(0x3D5, (uint8_t)(pos & 0xFF));
+    outbyte(0x3D4, 0x0E);
+    outbyte(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
+
+void cmd()
+{
+    printf("\nPlos> ");
+    update_cursor(terminal.x, terminal.y);
+}
+
+// Ottiene un comando di max lenght n e lo salva in buf
+void get_cmd(char *buf, int n)
+{
+    // Mostra il messaggio iniziale
+    cmd();
+
+    enum KEYCODE key = KEY_UNKNOWN;
+    bool bufChar;
+
+    int i;
+
+    for (i = 0; i < n;)
+    {
+        // Variabile che indica se un carattere deve
+        // essere salvato oppure no
+        bufChar = true;
+
+        // Ottieni il prossimo caratere
+        key = getch();
+
+        // Se la key è il pulsante invio esci dal ciclo
+        if (key == KEY_RETURN)
+            break;
+
+        if (key == KEY_BACKSPACE)
+        {
+            // Non salviamo il carattere
+            bufChar = false;
+
+            // Dobbiamo tornare indietro di un carattere
+            if (i > 0)
+            {
+                // Imposta le coordinate del cursore 1 indietro
+                if (terminal.x > 0)
+                {
+                    terminal.x--;
+                    update_cursor(terminal.x, terminal.y);
+                }
+
+                // Rimuoviamo il carattere dal display
+                print_char(' ');
+                terminal.x--;
+                update_cursor(terminal.x, terminal.y);
+
+                // Andiamo indietro un carattere nel buffer dei caratteri
+                i--;
+            }
+        }
+
+        switch (key)
+        {
+        case KEY_LSHIFT:
+        case KEY_RSHIFT:
+        case KEY_CAPSLOCK:
+        case KEY_LCTRL:
+        case KEY_RCTRL:
+        case KEY_LALT:
+        case KEY_RALT:
+        case KEY_ESCAPE:
+            // Non vogliamo mostrare sullo schermo questi caratteri
+            bufChar = false;
+
+        default:
+            break;
+        }
+
+        if (bufChar)
+        {
+            // Converte la key in ASCII e lo mette nel buffer
+            char c = kkybrd_key_to_ascii(key);
+
+            // Controllo che sia valido
+            if (c != 0)
+            {
+                print_char(c);
+                buf[i++] = c;
+            }
+        }
+    }
+
+    // Null terminiamo la stringa
+    buf[i] = '\0';
 }

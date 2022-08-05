@@ -36,5 +36,4 @@ void IRQ_Initialize()
     {
         ISR_RegisterHandler(PIC1_OFFSET + i, IRQ_Handler);
     }
-    print("[INFO] PIC e IRQs inizializzati\n");
 }

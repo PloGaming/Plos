@@ -33,5 +33,4 @@ void idt_table_init()
 {
     memset(idt, 0, sizeof(idt));
     idt_table_load(&idtr);
-    printf("[INFO] IDT Caricata\n");
 }

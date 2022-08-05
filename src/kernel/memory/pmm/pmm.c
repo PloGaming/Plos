@@ -135,23 +135,17 @@ void pmm_init_available_regions(uint32_t _mmap_start, uint32_t _mmap_end)
 	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)(_mmap_start + HIGHER_HALF_PAGING);
 	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)(_mmap_end + HIGHER_HALF_PAGING);
 
-	printf("Elenco regioni di memoria trovati:\n");
 	// Loop per ogni regione di memoria
 	for (int i = 1; mmap_start < mmap_end; mmap_start++, i++)
 	{
-		printf("%d_ ", i);
-
 		// Se il tipo della regione è MULTIBOOT_MEMORY_AVAILABLE allora lo inizializziamo
 		// (percio lo impostiamo come libero)
 		if (mmap_start->type == MULTIBOOT_MEMORY_AVAILABLE)
 		{
-			printf("Regione LIBERA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
 			pmm_init_region((uint32_t)mmap_start->addr, (size_t)mmap_start->len);
 			continue;
 		}
-		printf("Regione RISERVATA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
 	}
-	printf("\n");
 }
 
 // Dobbiamo impostare tutta l'area del kernel come occupata

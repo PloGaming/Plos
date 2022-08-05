@@ -38,6 +38,7 @@
 	- [x] Implementa malloc() 
 	- [x] Implementa free() 
 - [ ] Aggiungi supporto per la tastiera
+- [ ] Aggiungi una pseudo-shell
 - [ ] Implementa un file system
 
 #### Seconda parte - User mode development

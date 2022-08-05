@@ -22,9 +22,6 @@ void prekernel(multiboot_info_t *boot_info)
 		kernelPanic("Memory map invalida : ( \n");
 	}
 
-	// Print della memory map
-	print_system_information(boot_info);
-
 	// Inizializzazione del pmm (Physical memory manager)
 	pmm_init(memSize, (uint32_t *)(HIGHER_HALF_PAGING + kernel_size));
 	pmm_init_available_regions(boot_info->mmap_addr, boot_info->mmap_addr + boot_info->mmap_length);
@@ -34,7 +31,7 @@ void prekernel(multiboot_info_t *boot_info)
 	vmm_initialize();
 
 	// Chiamata al kernel main
-	kmain();
+	kmain(boot_info);
 }
 
 // Funzione che mostra la memory map del dispositivo
@@ -47,5 +44,26 @@ void print_system_information(multiboot_info_t *boot_info)
 
 	printf("Elenco informazioni: \n");
 	printf("Indirizzo kernel inizio: %x\nIndirizzo kernel fine: %x\nDimensioni kernel: %d byte\n", &kernel_start, &kernel_end, kernel_size);
-	printf("RAM totale installata: %dkb\n\n", memSize);
+	printf("RAM totale installata: %dkb\n", memSize);
+}
+
+void print_memory_map(multiboot_info_t *boot_info)
+{
+	multiboot_memory_map_t *mmap_start = (multiboot_memory_map_t *)(boot_info->mmap_addr + HIGHER_HALF_PAGING);
+	multiboot_memory_map_t *mmap_end = (multiboot_memory_map_t *)((boot_info->mmap_addr + boot_info->mmap_length) + HIGHER_HALF_PAGING);
+
+	printf("Elenco regioni di memoria trovati:\n");
+
+	// Loop per ogni regione di memoria
+	for (int i = 1; mmap_start < mmap_end; mmap_start++, i++)
+	{
+		printf("%d_ ", i);
+
+		if (mmap_start->type == MULTIBOOT_MEMORY_AVAILABLE)
+		{
+			printf("Regione LIBERA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
+			continue;
+		}
+		printf("Regione RISERVATA di memoria trovata ad indirizzo: %x - %x\n", (uint32_t)mmap_start->addr, (uint32_t)mmap_start->addr + (uint32_t)mmap_start->len - 1);
+	}
 }

@@ -1,6 +1,7 @@
 #include <interrupts/syscalls.h>
 #include <interrupts/isr.h>
 #include <io/irq.h>
+#include <devices/keyboard.h>
 
 extern uint32_t get_cr2();
 
@@ -11,7 +12,7 @@ void timer(Registers *regs)
 
 void keyPress(Registers *regs)
 {
-	printf("Keyboard Pressed\n");
+	keyboard_handler();
 }
 
 void page_fault_handler(Registers *regs)

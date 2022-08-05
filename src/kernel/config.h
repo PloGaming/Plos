@@ -6,4 +6,6 @@
 
 #define MAX_NUM_INTERRUPTS 256
 
+#define MAX_CMD_LENGTH 100
+
 #endif

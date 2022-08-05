@@ -41,8 +41,6 @@ bool kheap_init()
 	// Impostiamo tutte le entry come libere
 	memset(entries, IS_FREE, sizeof(entries));
 
-	printf("[INFO] Kernel Heap inizializzato correttamente\n");
-
 	return true;
 }
 
