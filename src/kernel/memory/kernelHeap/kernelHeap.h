@@ -32,6 +32,7 @@ bool kheap_init();
 bool kheap_enlarge(size_t n);
 void *kmalloc(int n);
 void *kmalloc_debug(int n);
+void kfree(void *addr);
 int get_blocks(size_t n);
 
 #endif

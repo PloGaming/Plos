@@ -36,7 +36,7 @@
 	- [x] Sposta il kernel in higher half
 - [x] Implementa un heap
 	- [x] Implementa malloc() 
-	- [ ] Implementa free() 
+	- [x] Implementa free() 
 - [ ] Aggiungi supporto per la tastiera
 - [ ] Implementa un file system
 

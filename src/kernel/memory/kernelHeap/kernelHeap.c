@@ -110,7 +110,6 @@ int find_free_blocks(int total_blocks)
 		{
 			// Significa che il numero di blocchi liberi continui non é sufficiente
 			// dovremo trovare un altra serie, reimpostiamo tutto
-
 			index = -1;
 			found_free_blocks = 0;
 			continue;
@@ -143,7 +142,18 @@ void mark_series_of_blocks(int first_block, int total_blocks)
 {
 	for (int i = first_block; i < first_block + total_blocks; i++)
 	{
+		// Imposta la entry come occupata
 		entries[i] = 0x00;
+
+		// Se la entry é la prima della serie allora
+		// la imposto come prima
+		if (i == first_block)
+			entries[i] |= IS_FIRST;
+
+		// Se questo blocco non é l'ultimo della serie
+		// imposto il bit HAS_N
+		if (i < (first_block + total_blocks - 1))
+			entries[i] |= HAS_N;
 	}
 }
 
@@ -151,6 +161,27 @@ void mark_series_of_blocks(int first_block, int total_blocks)
 void *calculate_addr(int block_index)
 {
 	return (void *)(KERNEL_HEAP_START_ADDR + (block_index * HEAP_BLOCK_SIZE));
+}
+
+// Funzione che imposta una serie di blocchi come liberi
+void mark_series_of_block_free(int start_block_index)
+{
+	bool loop = true;
+	int i = start_block_index;
+	while (loop)
+	{
+		loop = false;
+
+		// Controlliamo se la entry ha dei successivi blocchi
+		if (entries[i] & HAS_N)
+			loop = true;
+
+		// Impostiamo la entry come vuota
+		entries[i] = IS_FREE;
+
+		// Andiamo alla prossima entry
+		i++;
+	}
 }
 
 // Funzione malloc() per il kernel
@@ -190,10 +221,26 @@ void *kmalloc(int n)
 	return addr;
 }
 
+// Funzione che oltre ad invocare kmalloc() fornisce informazioni di debug aggiuntive
 void *kmalloc_debug(int n)
 {
 	void *addr = kmalloc(n);
 
 	printf("[DEBUG] Indirizzo generato da kmalloc() %x, kernelHeap fine: %x\n", addr, kheap_endOfHeap);
+
 	return addr;
+}
+
+// Funzione che libera un blocco di memoria
+void kfree(void *addr)
+{
+	// Controllo che l'indirizzo sia l'inizio di un blocco
+	if ((uint32_t)addr % HEAP_BLOCK_SIZE != 0)
+		return;
+
+	// Calcoliamo il blocco in base all'indirizzo
+	int block_index = ((uint32_t)addr - KERNEL_HEAP_START_ADDR) / HEAP_BLOCK_SIZE;
+
+	// Impostiamo tutti i blocchi come liberi
+	mark_series_of_block_free(block_index);
 }
