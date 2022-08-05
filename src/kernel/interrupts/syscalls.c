@@ -6,7 +6,7 @@ extern uint32_t get_cr2();
 
 void timer(Registers *regs)
 {
-	printf(".");
+	return;
 }
 
 void keyPress(Registers *regs)
