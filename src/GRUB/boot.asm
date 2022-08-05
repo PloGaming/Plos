@@ -46,22 +46,6 @@ _start:
 	mov esp, stack_top
 	mov ebp, esp
 
-; GRUB non garantisce l'effettivo caricamento della GDT percio dobbiamo farlo noi
-.loadGDT:
-    
-    lgdt [gdt_descriptor] ; gdtr viene impostato
-	jmp CODE_SEG:resume ; long jump necessario per ricaricare cs
-
-resume:
-
-    ; Setup di tutti i registri segmento riguardanti i dati
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-
 ; Abilitazione A20 line tramite il metodo fast gate 
 .enableA20:
 
@@ -119,20 +103,19 @@ three:
     ; anche ad 0xC0000000 in questa maniera il kernel sara higher half
     ; (non ci servira piu la "lowe half" entry percio la elimineremo quando non sara piu necessaria)
 
+
     ; eax sarà una pde, conterrà l'indirizzo fisico della page table e gli attributi (0x003)
     mov eax, (boot_page_table1 - 0xC0000000 + 0x003)
-
     ; Lower half table impostata
     mov [boot_page_directory - 0xC0000000 + 0], eax
-
     ; Higher half table impostata
     mov [boot_page_directory - 0xC0000000 + 768 * 4], eax
 
     ; eax conterra l'indirizzo della page directory
     mov eax, (boot_page_directory - 0xC0000000 + 0x003)
-
     ; La 1023esima entry deve puntare alla page directory per recursive paging 
     mov [boot_page_directory - 0xC0000000 + 1023 * 4], eax
+
 
     ; Impostiamo CR3 all'indirizzo della boot_page_directory
     mov eax, (boot_page_directory - 0xC0000000)
@@ -151,44 +134,6 @@ three:
 sto:
     hlt
     jmp sto
- 
-; Questo è l'inizio della gdt table
-gdt_table_start:
-
-; La prima entry della gdt deve essere nulla
-gdt_null_entry:
-    dd 0x0
-    dd 0x0
-
-; La entry per il segmento code del kernel (0x0 - 0xxfffffff)
-gdt_code_entry:
-    dw 0xffff
-    dw 0x0
-    db 0x0
-    db 10011010b
-    db 11001111b
-    db 0x0
-
-; La entry per il segmento data del kernel (0x0 - 0xxfffffff)
-gdt_data_entry:
-    dw 0xffff
-    dw 0x0
-    db 0x0
-    db 10010010b
-    db 11001111b
-    db 0x0
-
-; fine gdt table
-gdt_table_finish:
-
-; il registro gdtr deve puntare a questo
-gdt_descriptor:
-    dw gdt_table_finish - gdt_table_start - 1
-    dd gdt_table_start
-
-; indice per il segmento Code and Data
-CODE_SEG equ gdt_code_entry - gdt_table_start
-DATA_SEG equ gdt_data_entry - gdt_table_start
 
 [section .text]
 

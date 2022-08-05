@@ -10,18 +10,17 @@
 
 // Typedef per indicare indirizzi virtuali
 typedef uint32_t virtual_addr;
-
-// Typedef per indicare indirizzi virtuali
+// Typedef per indicare indirizzi fisici
 typedef uint32_t physical_addr;
-
-// Costanti definite nell'architettura x86
-#define PAGES_PER_TABLE 1024
-#define TABLES_PER_DIR 1024
 
 // Macro per estrarre le parti da un indirizzo virtuale
 #define PAGE_DIRECTORY_INDEX(x) (((x) >> 22) & 0x3ff)
 #define PAGE_TABLE_INDEX(x) (((x) >> 12) & 0x3ff)
 #define PAGE_GET_ADDRESS(x) ((*x) & ~0xfff) // ritorna solo l'indirizzo rimuovendo le flags
+
+// Costanti definite nell'architettura x86
+#define PAGES_PER_TABLE 1024
+#define TABLES_PER_DIR 1024
 
 // In una page table ci sono 1024 entry ed ognuna descrive
 // 4096 byte (1024 * 4096 = 4MB di memoria)
@@ -32,7 +31,7 @@ typedef uint32_t physical_addr;
 #define PAGE_DIRECTORY_ADDR_SPACE_SIZE 0x100000000
 
 // Dimensione pagina standard (4kb)
-#define PAGE_SIZE 4096
+#define PAGE_SIZE 0x1000
 
 // La entry che permette la logica del paging ricorsivo
 #define DIRECTORY_RECURSIVE_ENTRY 1023
@@ -40,7 +39,11 @@ typedef uint32_t physical_addr;
 // Definisce la costante higher half
 #define HIGHER_HALF_PAGING 0xC0000000
 
-#define LAST_4MB_ADDRESS_SPACE 0xffc00000
+// Definisce l'indirizzo degli ultimi 4MB
+#define LAST_4MB_ADDRESS_SPACE 0xFFC00000
+
+// Ultima page che é mappata alla page dir
+#define KERNEL_PAGE_DIR 0xFFFFF000
 
 // Struttura per page_table
 struct page_table
@@ -55,10 +58,11 @@ struct page_directory
 };
 
 // Funzioni per la vmm
+bool vmm_map(virtual_addr addr, physical_addr phys);
+bool vmm_unmap(virtual_addr virt);
 bool vmm_alloc_page(pte *entry);
 bool vmm_free_page(pte *entry);
-pde *vmm_directory_get_entry(uint32_t entry_num);
-pte *vmm_table_get_entry(pde *directory_entry, uint32_t entry_num);
+void *vmm_get_table(uint32_t entry_num);
 bool vmm_switch_pdirectory(struct page_directory *dir);
 struct page_directory *vmm_get_directory();
 void vmm_initialize();

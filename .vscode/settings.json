@@ -21,6 +21,7 @@
         "irq.h": "c",
         "string.h": "c",
         "prekernel.h": "c",
-        "vmm.h": "c"
+        "vmm.h": "c",
+        "kernelheap.h": "c"
     }
 }

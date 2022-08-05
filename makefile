@@ -23,7 +23,7 @@ QEMU=qemu-system-i386
 OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o bin/interrupt.o bin/memory.o \
 	bin/isr.asm.o  bin/isr.o bin/isrs_gen.o bin/io.asm.o bin/io.o bin/pic.o bin/irq.o \
 	bin/utility_functions.asm.o bin/pmm.o bin/pageDirectory.o bin/pageTable.o bin/vmm.o bin/syscalls.o \
-	bin/prekernel.o
+	bin/prekernel.o bin/kernelHeap.o
 
 all: bin/kernel linker.ld
 	./iso.sh
@@ -93,6 +93,9 @@ bin/syscalls.o: src/kernel/interrupts/syscalls.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 bin/prekernel.o: src/kernel/prekernel/prekernel.c
+	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
+
+bin/kernelHeap.o: src/kernel/memory/kernelHeap/kernelHeap.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 run: all

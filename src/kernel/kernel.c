@@ -9,6 +9,7 @@
 #include <interrupts/syscalls.h>
 #include <prekernel/prekernel.h>
 #include <memory/paging/vmm.h>
+#include <memory/kernelHeap/kernelHeap.h>
 
 void kmain()
 {
@@ -29,6 +30,10 @@ void kmain()
 
     // Abilita gli interrupt
     EnableInterrupts();
+
+    // Inizializza l'heap del kernel
+    if (!kheap_init())
+        kernelPanic("Errore durante l'inizializzazione dell'heap kernel\n");
 }
 
 // Funzione Panic del kernel
