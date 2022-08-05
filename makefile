@@ -23,7 +23,7 @@ QEMU=qemu-system-i386
 OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o bin/interrupt.o bin/memory.o \
 	bin/isr.asm.o  bin/isr.o bin/isrs_gen.o bin/io.asm.o bin/io.o bin/pic.o bin/irq.o \
 	bin/utility_functions.asm.o bin/pmm.o bin/pageDirectory.o bin/pageTable.o bin/vmm.o bin/syscalls.o \
-	bin/prekernel.o bin/kernelHeap.o
+	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm
 
 all: bin/kernel linker.ld
 	./iso.sh
@@ -48,6 +48,9 @@ bin/io.asm.o: src/kernel/io/io.asm
 	nasm -f elf -g $< -o $@
 
 bin/utility_functions.asm.o: src/kernel/memory/paging/utility_functions.asm
+	nasm -f elf -g $< -o $@
+
+bin/getCr2.asm: src/kernel/interrupts/getCr2.asm
 	nasm -f elf -g $< -o $@
 
 bin/terminal.o: src/kernel/terminal/terminal.c src/kernel/terminal/terminal.h

@@ -2,6 +2,8 @@
 #include <interrupts/isr.h>
 #include <io/irq.h>
 
+extern uint32_t get_cr2();
+
 void timer(Registers *regs)
 {
 	printf(".");
@@ -16,6 +18,7 @@ void page_fault_handler(Registers *regs)
 {
 	printf("Page fault : (\n");
 	printf("Error Code: %b\n", regs->error);
+	printf("Fault address: %x\n", get_cr2());
 	kernelPanic("Exit..\n");
 }
 
