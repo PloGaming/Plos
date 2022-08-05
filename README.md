@@ -25,7 +25,7 @@
 - [x] Sviluppo funzioni libc
 	- [x] Aggiunta la funzione printf()
 	- [x] Aggiunte memset() e memcpy()
-	- [ ] Aggiunte funzioni per manipolare le stringhe
+	- [x] Aggiunte funzioni per manipolare le stringhe
 - [x] Sviluppo pmm
 	- [x] Inizializza pmm
 	- [x] Inizializza tutte le regioni di spazio FREE
