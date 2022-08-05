@@ -7,6 +7,8 @@
 
 struct terminal_position terminal;
 
+uint8_t color_terminal = WHITE_ON_BLUE;
+
 // Inserisce un carattere con un determinato attributo ad una data posizione
 void terminal_putchar(int position, char character, uint8_t attribute)
 {
@@ -31,7 +33,7 @@ void terminal_scroll()
     // Elimina la prima riga
     for (int i = 0; i < VGA_WIDTH; i++)
     {
-        terminal_putchar(i, ' ', WHITE_ON_BLUE);
+        terminal_putchar(i, ' ', color_terminal);
     }
 
     char character;
@@ -39,13 +41,13 @@ void terminal_scroll()
     for (int i = VGA_WIDTH; i < VGA_HEIGTH * VGA_WIDTH; i++)
     {
         character = terminal_getChar(i);
-        terminal_putchar(i - VGA_WIDTH, character, WHITE_ON_BLUE);
+        terminal_putchar(i - VGA_WIDTH, character, color_terminal);
     }
 
     // Pulisce l'ultima riga
     for (int i = VGA_WIDTH * (VGA_HEIGTH - 1); i < VGA_WIDTH * VGA_HEIGTH; i++)
     {
-        terminal_putchar(i, ' ', WHITE_ON_BLUE);
+        terminal_putchar(i, ' ', color_terminal);
     }
 
     terminal.y = 24;
@@ -99,7 +101,7 @@ void terminal_putstring(char *string)
 
         position = (terminal.y * VGA_WIDTH) + terminal.x++;
         catch (position);
-        terminal_putchar(position, *(string + i), WHITE_ON_BLUE);
+        terminal_putchar(position, *(string + i), color_terminal);
         catch (position);
     }
 
@@ -122,7 +124,7 @@ void clear_screen()
 {
     for (int i = 0; i < VGA_HEIGTH * VGA_WIDTH; i++)
     {
-        terminal_putchar(i, ' ', WHITE_ON_BLUE);
+        terminal_putchar(i, ' ', color_terminal);
     }
 }
 

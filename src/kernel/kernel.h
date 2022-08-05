@@ -11,5 +11,6 @@ void kernelPanic(char *message);
 void run_shell(multiboot_info_t *boot_info);
 bool run_cmd(char *cmd, multiboot_info_t *boot_info);
 void print_ascii_art();
+void print_help();
 
 #endif

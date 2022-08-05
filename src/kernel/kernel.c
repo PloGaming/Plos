@@ -104,6 +104,13 @@ bool run_cmd(char *cmd, multiboot_info_t *boot_info)
         terminal_init();
     }
 
+    // Mostra il menu delle opzioni
+    if (!strcmp(cmd, "help"))
+    {
+        printf("\n");
+        print_help();
+    }
+
     return false;
 }
 
@@ -120,4 +127,13 @@ void print_ascii_art()
         "                                  \\|_________| \n";
 
     printf(ascii);
+}
+
+void print_help()
+{
+    printf("exit - Esce dal sistema operativo\n");
+    printf("print mem info - Mostra delle informazioni sulla memoria\n");
+    printf("print mem layout - Mostra il layout della memoria fisica\n");
+    printf("clear - pulisce lo schermo\n");
+    printf("help - mostra questo menu qua\n");
 }
