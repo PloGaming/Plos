@@ -37,8 +37,8 @@
 - [x] Implementa un heap
 	- [x] Implementa malloc() 
 	- [x] Implementa free() 
-- [ ] Aggiungi supporto per la tastiera
-- [ ] Aggiungi una pseudo-shell
+- [x] Aggiungi supporto per la tastiera
+- [x] Aggiungi una pseudo-shell
 - [ ] Implementa un file system
 
 #### Seconda parte - User mode development
