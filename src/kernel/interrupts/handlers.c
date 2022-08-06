@@ -3,6 +3,7 @@
 #include <io/irq.h>
 #include <devices/keyboard.h>
 #include <devices/pit.h>
+#include <disk/disk.h>
 
 extern uint32_t get_cr2();
 
@@ -33,10 +34,16 @@ void page_fault_handler(Registers *regs)
 	kernelPanic("Exit..\n");
 }
 
+void ata_read_handler(Registers *regs)
+{
+	read_is_ready();
+}
+
 // Funzione che registra tutti gli interrupt
-void register_syscalls()
+void register_handlers()
 {
 	IRQ_RegisterHandler(0, timer);
 	IRQ_RegisterHandler(1, keyPress);
+	IRQ_RegisterHandler(14, ata_read_handler);
 	ISR_RegisterHandler(14, page_fault_handler);
 }

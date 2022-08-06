@@ -23,7 +23,7 @@ QEMU=qemu-system-i386
 OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o bin/interrupt.o bin/memory.o \
 	bin/isr.asm.o  bin/isr.o bin/isrs_gen.o bin/io.asm.o bin/io.o bin/pic.o bin/irq.o \
 	bin/utility_functions.asm.o bin/pmm.o bin/pageDirectory.o bin/pageTable.o bin/vmm.o bin/handlers.o \
-	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm.o bin/keyboard.o bin/PIT.o
+	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm.o bin/keyboard.o bin/PIT.o bin/disk.o
 
 all: bin/kernel linker.ld
 	./iso.sh
@@ -107,8 +107,14 @@ bin/keyboard.o: src/kernel/devices/keyboard.c
 bin/PIT.o: src/kernel/devices/pit.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
+bin/disk.o: src/kernel/disk/disk.c
+	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
+
 run: all
 	$(QEMU) -cdrom build/PlOS.iso
+
+create_disk :
+	qemu-img create hard_disk.img 10M
 
 debug: all
 	$(QEMU) -s -S -cdrom build/PlOS.iso

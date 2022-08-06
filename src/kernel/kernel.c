@@ -13,6 +13,7 @@
 #include <devices/keyboard.h>
 #include <config.h>
 #include <devices/pit.h>
+#include <disk/disk.h>
 
 void kmain(multiboot_info_t *boot_info)
 {
@@ -26,7 +27,7 @@ void kmain(multiboot_info_t *boot_info)
     IRQ_Initialize();
 
     // Aggiunta degli interrupt
-    register_syscalls();
+    register_handlers();
 
     // Abilita gli interrupt
     EnableInterrupts();
@@ -41,10 +42,13 @@ void kmain(multiboot_info_t *boot_info)
     // Inizializza il PIT
     pit_start_counter(100, I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
 
+    // Inizializza dischi (per il momento solo 1)
+    disk_search_and_init();
+
     // Mostra un messaggio di avvio
     print_ascii_art();
 
-    // Ricevi ed esegui comandi
+    // Inizia ad eseguire comandi
     run_shell(boot_info);
 }
 

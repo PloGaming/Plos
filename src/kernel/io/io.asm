@@ -4,10 +4,11 @@ section .asm
 
 global insbyte
 global outbyte
+global insword
+global outword
 global EnableInterrupts
 global DisableInterrupts
 
-;extern unsigned char input(unsigned short port)
 insbyte:
     push ebp
     mov ebp, esp
@@ -20,6 +21,16 @@ insbyte:
     leave
     ret
 
+insword:
+    push ebp
+    mov ebp, esp
+
+    xor eax, eax
+    mov edx, [ebp + 8]
+    in ax, dx
+
+    leave
+    ret
 
 outbyte:
     push ebp
@@ -27,9 +38,20 @@ outbyte:
 
     mov dx, [esp + 0x8]
     mov al, [esp + 0xC]
-    out dx, al
 
     out dx, al
+
+    leave
+    ret
+
+outword:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp + 12]
+    mov edx, [ebp + 8]
+
+    out dx, ax
 
     leave
     ret

@@ -10,12 +10,14 @@ static uint32_t global_tick_count = 0;
 // incrementa solamente di 1 il global_tick_count
 void pit_interrupt_handler()
 {
+	// Voglio evitare un overflow
 	if (global_tick_count == UINT32_MAX)
 	{
 		global_tick_count = 0;
 		printf("Global tick count resettato\n");
 	}
 
+	// Aumenta il numero di tick
 	global_tick_count++;
 }
 

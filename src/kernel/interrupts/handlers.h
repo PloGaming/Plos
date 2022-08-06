@@ -5,6 +5,6 @@
 #include <io/io.h>
 #include <kernel.h>
 
-void register_syscalls();
+void register_handlers();
 
 #endif
