@@ -6,16 +6,16 @@
 #include <io/irq.h>
 #include <io/io.h>
 #include <strings/string.h>
-#include <interrupts/syscalls.h>
+#include <interrupts/handlers.h>
 #include <prekernel/prekernel.h>
 #include <memory/paging/vmm.h>
 #include <memory/kernelHeap/kernelHeap.h>
 #include <devices/keyboard.h>
 #include <config.h>
+#include <devices/pit.h>
 
 void kmain(multiboot_info_t *boot_info)
 {
-
     // Inizializzazione dell'IDT (Interrupt descriptor table)
     idt_table_init();
 
@@ -38,9 +38,13 @@ void kmain(multiboot_info_t *boot_info)
     // Inizializza la tastiera
     kkybrd_install();
 
+    // Inizializza il PIT
+    pit_start_counter(100, I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
+
+    // Mostra un messaggio di avvio
     print_ascii_art();
 
-    // Ricevi comandi
+    // Ricevi ed esegui comandi
     run_shell(boot_info);
 }
 
@@ -104,6 +108,11 @@ bool run_cmd(char *cmd, multiboot_info_t *boot_info)
         terminal_init();
     }
 
+    if (!strcmp(cmd, "ticks"))
+    {
+        printf("\nNumero di tick passati %d\n", get_tick_count());
+    }
+
     // Mostra il menu delle opzioni
     if (!strcmp(cmd, "help"))
     {
@@ -135,5 +144,14 @@ void print_help()
     printf("print mem info - Mostra delle informazioni sulla memoria\n");
     printf("print mem layout - Mostra il layout della memoria fisica\n");
     printf("clear - pulisce lo schermo\n");
+    printf("ticks - mostra il numero corrente di tick passati\n");
     printf("help - mostra questo menu qua\n");
+}
+
+// Funzione che mette aspetta ms millisecondi
+void sleep(int ms)
+{
+    int temp = get_tick_count() + ms;
+    while (get_tick_count() < temp)
+        ;
 }

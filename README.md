@@ -39,6 +39,7 @@
 	- [x] Implementa free() 
 - [x] Aggiungi supporto per la tastiera
 - [x] Aggiungi una pseudo-shell
+- [x] Implementa un timer (PIT)
 - [ ] Implementa un file system
 
 #### Seconda parte - User mode development
