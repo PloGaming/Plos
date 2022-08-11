@@ -52,7 +52,6 @@ int disk_read_sector(unsigned int lba, int total, void *buf)
 		for (int i = 0; i < 256; i++)
 		{
 			*data = insword(0x1F0);
-			printf("%x ", *data);
 			data++;
 		}
 	}

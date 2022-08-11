@@ -111,13 +111,10 @@ bin/disk.o: src/kernel/disk/disk.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 run: all
-	$(QEMU) -cdrom build/PlOS.iso
-
-create_disk :
-	qemu-img create hard_disk.img 10M
+	$(QEMU) -hda build/PlOS.iso
 
 debug: all
-	$(QEMU) -s -S -cdrom build/PlOS.iso
+	$(QEMU) -s -S -hda build/PlOS.iso
 
 clean:
 	rm -Rf $(OBJS)

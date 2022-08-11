@@ -124,6 +124,18 @@ bool run_cmd(char *cmd, multiboot_info_t *boot_info)
         print_help();
     }
 
+    if (!strcmp(cmd, "test"))
+    {
+        printf("\n");
+        char myGod[512];
+        disk_read_sector(0, 1, myGod);
+
+        for (int i = 0; i < 10; i++)
+        {
+            printf("%x\n", myGod[i]);
+        }
+    }
+
     return false;
 }
 
