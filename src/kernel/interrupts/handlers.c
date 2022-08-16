@@ -3,7 +3,7 @@
 #include <io/irq.h>
 #include <devices/keyboard.h>
 #include <devices/pit.h>
-#include <disk/disk.h>
+#include <devices/mouse.h>
 
 extern uint32_t get_cr2();
 
@@ -23,6 +23,21 @@ void keyPress(Registers *regs)
 	keyboard_handler();
 }
 
+// Handler per IRQ[12]
+// Chiamato quando lo stato del mouse ha subito
+// un cambiamento
+void mouse_change(Registers *regs)
+{
+	mouse_handler();
+}
+
+// Handler per IRQ[14]
+// Chiamato quando il disco puo essere letto
+void ata_read_handler(Registers *regs)
+{
+	return;
+}
+
 // Handler per ISR[14]
 // Chiamato quando si tenta di accedere ad un
 // indirizzo virtuale non mappato
@@ -34,16 +49,12 @@ void page_fault_handler(Registers *regs)
 	kernelPanic("Exit..\n");
 }
 
-void ata_read_handler(Registers *regs)
-{
-	read_is_ready();
-}
-
 // Funzione che registra tutti gli interrupt
 void register_handlers()
 {
 	IRQ_RegisterHandler(0, timer);
 	IRQ_RegisterHandler(1, keyPress);
+	IRQ_RegisterHandler(12, mouse_change);
 	IRQ_RegisterHandler(14, ata_read_handler);
 	ISR_RegisterHandler(14, page_fault_handler);
 }

@@ -13,7 +13,13 @@
 #include <devices/keyboard.h>
 #include <config.h>
 #include <devices/pit.h>
-#include <disk/disk.h>
+#include <disk/ata.h>
+#include <devices/mouse.h>
+
+static struct ATA_Device Master1;
+static struct ATA_Device Slave1;
+static struct ATA_Device Master2;
+static struct ATA_Device Slave2;
 
 void kmain(multiboot_info_t *boot_info)
 {
@@ -42,8 +48,18 @@ void kmain(multiboot_info_t *boot_info)
     // Inizializza il PIT
     pit_start_counter(100, I86_PIT_OCW_COUNTER_0, I86_PIT_OCW_MODE_SQUAREWAVEGEN);
 
-    // Inizializza dischi (per il momento solo 1)
-    disk_search_and_init();
+    // Inizializza il mouse
+    // mouse_initialize();
+
+    // Inizializziamo i primi 4 dispositivi ATA (master e slave)
+    Initialize_ATA_Device(&Master1, 0x1F0, true);
+    Initialize_ATA_Device(&Slave1, 0x1F0, false);
+
+    Identify(&Master1);
+
+    Initialize_ATA_Device(&Master2, 0x170, true);
+    Initialize_ATA_Device(&Slave2, 0x170, false);
+    // TODO: Inizializzare altri ATA device
 
     // Mostra un messaggio di avvio
     print_ascii_art();
@@ -124,16 +140,10 @@ bool run_cmd(char *cmd, multiboot_info_t *boot_info)
         print_help();
     }
 
+    // Mostra sullo schermo i primi 10 byte di dati nell'hard disk principale
     if (!strcmp(cmd, "test"))
     {
-        printf("\n");
-        char myGod[512];
-        disk_read_sector(0, 1, myGod);
-
-        for (int i = 0; i < 10; i++)
-        {
-            printf("%x\n", myGod[i]);
-        }
+        // TODO
     }
 
     return false;
@@ -154,6 +164,7 @@ void print_ascii_art()
     printf(ascii);
 }
 
+// Mostra il messaggio che spiega i comandi
 void print_help()
 {
     printf("exit - Esce dal sistema operativo\n");
@@ -161,13 +172,16 @@ void print_help()
     printf("print mem layout - Mostra il layout della memoria fisica\n");
     printf("clear - pulisce lo schermo\n");
     printf("ticks - mostra il numero corrente di tick passati\n");
+    printf("test - mostra i primi 10 byte dell'hard disk principale\n");
     printf("help - mostra questo menu qua\n");
 }
 
 // Funzione che mette aspetta ms millisecondi
 void sleep(int ms)
 {
+    DisableInterrupts();
     int temp = get_tick_count() + ms;
     while (get_tick_count() < temp)
         ;
+    EnableInterrupts();
 }

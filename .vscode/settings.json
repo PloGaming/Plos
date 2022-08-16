@@ -23,6 +23,7 @@
         "prekernel.h": "c",
         "vmm.h": "c",
         "kernelheap.h": "c",
-        "keyboard.h": "c"
+        "keyboard.h": "c",
+        "stdint.h": "c"
     }
 }
