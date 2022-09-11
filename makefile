@@ -23,7 +23,7 @@ QEMU=qemu-system-i386
 OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o bin/interrupt.o bin/memory.o \
 	bin/isr.asm.o  bin/isr.o bin/isrs_gen.o bin/io.asm.o bin/io.o bin/pic.o bin/irq.o \
 	bin/utility_functions.asm.o bin/pmm.o bin/pageDirectory.o bin/pageTable.o bin/vmm.o bin/handlers.o \
-	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm.o bin/keyboard.o bin/PIT.o bin/ata.o bin/mouse.o
+	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm.o bin/keyboard.o bin/PIT.o bin/mouse.o
 
 all: bin/kernel linker.ld
 	./iso.sh
@@ -105,9 +105,6 @@ bin/keyboard.o: src/kernel/devices/keyboard.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 bin/PIT.o: src/kernel/devices/pit.c
-	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
-
-bin/ata.o: src/kernel/disk/ata.c
 	$(CC) $(CFLAGS) $(INCLUDES) -std=gnu99 -c $< -o $@
 
 bin/mouse.o: src/kernel/devices/mouse.c

@@ -24,6 +24,7 @@
         "vmm.h": "c",
         "kernelheap.h": "c",
         "keyboard.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "pit.h": "c"
     }
 }
