@@ -41,19 +41,6 @@ SECTIONS
         *(.data)
     }
 
-    
-    /*
-        Tutti i file .asm devono avere section .asm all'inizio in questa maniera verranno inseriti come ultimi
-        elementi all'interno della memoria.
-        Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
-        perfettamente per funzionare mentre asm no
-    */
-
-    .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
-    {
-        *(.asm)
-    }
-
     /*
         bss section, contiene variabili non inizializzate statiche (o globali)
     */
@@ -66,7 +53,17 @@ SECTIONS
         *(.bootstrap_stack)
     }
 
-    
+    /*
+        Tutti i file .asm devono avere section .asm all'inizio in questa maniera verranno inseriti come ultimi
+        elementi all'interno della memoria.
+        Questo per evitare che il codice asm si scontri con il codice c, dato che il .c richiede che sia tutto allineato
+        perfettamente per funzionare mentre asm no
+    */
+
+    .asm ALIGN(4K) : AT (ADDR( .asm) - 0xC0000000)
+    {
+        *(.asm)
+    }
     
     kernel_end = .;
 }

@@ -4,7 +4,7 @@ global _start ; Esporta il simbolo in questa maniera possiamo compilare senza er
 extern kernel_start
 extern kernel_end
 
-MBALIGN  equ  1 << 0
+MBALIGN  equ  1
 MEMINFO  equ  1 << 1
 FLAGS    equ  MBALIGN | MEMINFO
 MAGIC    equ  0x1BADB002
@@ -46,14 +46,14 @@ _start:
 	mov esp, stack_top
 	mov ebp, esp
 
-; Abilitazione A20 line tramite il metodo fast gate 
+; Abilitazione A20 line tramite il metodo "fast gate" 
 .enableA20:
 
     in al, 0x92
     or al, 2
     out 0x92, al
 
-; Abilitazione paging per kernel higher half (3GB 0xC0000000)
+; Abilitazione paging per kernel higher half (3GB = 0xC0000000)
 .paging:
 
     ; Indirizzo fisico della page_table (Sottraiamo 0xC0000000 a causa del linker)
@@ -150,14 +150,14 @@ four:
     mov cr3, ecx
 
 ; Una volta abilitato il paging dobbiamo ricaricare la gdt
-.reload_gdt_page:
+reload_gdt_page:
 
-    lgdt [page_gdt_descriptor] ; gdtr viene impostato
+    lgdt [page_gdt_descriptor] ; il registro gdtr viene impostato
 	jmp PAGE_CODE_SEG:page_resume
 
 page_resume:
 
-     ; Setup di tutti i registri segmento riguardanti i dati
+    ; Setup di tutti i registri segmento riguardanti i dati
     mov ax, PAGE_DATA_SEG
     mov ds, ax
     mov es, ax

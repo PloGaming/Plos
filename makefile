@@ -13,7 +13,7 @@ CFLAGS=-g -ggdb -ffreestanding -falign-jumps -falign-functions -falign-labels \
 	-falign-loops -fstrength-reduce -fomit-frame-pointer \
 	-finline-functions -Wno-unused-function -fno-builtin -Werror \
 	-Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib \
-	-nostartfiles -nodefaultlibs -Wall -O0
+	-nostartfiles -nodefaultlibs -Wall
 
 # Il path dove il nostro compilatore cerchera gli headers
 INCLUDES=-I src/kernel
@@ -25,7 +25,7 @@ OBJS=bin/GRUB.asm.o bin/kernel.o bin/terminal.o bin/string.o bin/idt_load.asm.o 
 	bin/utility_functions.asm.o bin/pmm.o bin/pageDirectory.o bin/pageTable.o bin/vmm.o bin/handlers.o \
 	bin/prekernel.o bin/kernelHeap.o bin/getCr2.asm.o bin/keyboard.o bin/PIT.o bin/mouse.o
 
-all: bin/kernel linker.ld
+all: bin/kernel
 	./iso.sh
 
 bin/kernel: $(OBJS)
