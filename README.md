@@ -65,5 +65,3 @@
 - [ ] Sviluppo GUI
 - [ ] Aggiungere networking
 - [ ] Implementare il supporto per i suoni
-
-# FIGA IL CERE
