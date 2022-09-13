@@ -91,7 +91,7 @@ void pmm_init(size_t memSize, uint32_t *bitmap)
 
 	if (pmm_max_blocks % 32)
 	{
-		pmm_bitmap_size++; // Se non è alinneato perfettamente aumentiamo il size di 1
+		pmm_bitmap_size++; // Se non è alinneato perfettamente aumentiamo la dimensione di 1
 	}
 
 	// Imposta tutta la memoria come occupata
@@ -148,33 +148,7 @@ void pmm_init_available_regions(uint32_t _mmap_start, uint32_t _mmap_end)
 	}
 }
 
-// Dobbiamo impostare tutta l'area del kernel come occupata
-void pmm_deinit_kernel()
-{
-	// Simboli esportati dal linker
-	extern uint8_t *kernel_start;
-	extern uint8_t *kernel_end;
-
-	size_t kernel_size = (size_t)&kernel_end - (size_t)&kernel_start;
-
-	// Allineiamo il bitmap a 4096 byte se non è gia allineato
-	uint32_t pmm_bitmap_size_aligned = pmm_bitmap_size;
-	if (!IS_ALIGNED(pmm_bitmap_size_aligned, PMM_BLOCK_SIZE))
-	{
-		pmm_bitmap_size_aligned = ALIGN(pmm_bitmap_size_aligned, PMM_BLOCK_SIZE);
-	}
-
-	// Allinea il kernel a 4096 byte se non è gia allineato
-	uint32_t kernel_size_aligned = kernel_size;
-	if (!IS_ALIGNED(kernel_size_aligned, PMM_BLOCK_SIZE))
-	{
-		kernel_size_aligned = ALIGN(kernel_size_aligned, PMM_BLOCK_SIZE);
-	}
-
-	// Impostiamo come occupato le regioni del kernel e della bitmap
-	pmm_deinit_region((uint32_t)&kernel_start, kernel_size_aligned);
-}
-
+// Alloca un blocco impostandolo come occupato nella bitmap
 void *pmm_alloc_block()
 {
 	if (pmm_used_blocks - pmm_max_blocks <= 0)
@@ -182,6 +156,7 @@ void *pmm_alloc_block()
 		return NULL;
 	}
 
+	// Otteniamo il primo blocco libero
 	int index = pmm_first_free();
 
 	if (index == -1)
@@ -189,12 +164,15 @@ void *pmm_alloc_block()
 		return NULL;
 	}
 
+	// Impostiamolo come occupato
 	bitmap_set(index);
 	pmm_used_blocks++;
 
+	// Ritorniamo l'indirizzo di esso
 	return (void *)(index * PMM_BLOCK_SIZE);
 }
 
+// Libera un blocco dato il suo indirizzo
 void pmm_free_block(void *p)
 {
 	if (p == NULL)
@@ -202,21 +180,22 @@ void pmm_free_block(void *p)
 		return;
 	}
 
-	uint32_t p_addr = (uint32_t)p;
+	// Otteniamo l'index
+	int index = (uint32_t)p / PMM_BLOCK_SIZE;
 
-	int index = p_addr / PMM_BLOCK_SIZE;
-
+	// Lo impostiamo come libero
 	bitmap_unset(index);
 }
 
+// Funzione che ritorna il numero di blocchi liberi
 int pmm_get_free_block_count()
 {
 	return pmm_max_blocks - pmm_used_blocks;
 }
 
+// Funzione che ritorna l'indirizzo del primo blocco libero di "size" blocchi
 int pmm_first_free_s(size_t size)
 {
-
 	if (size == 0)
 		return -1;
 
@@ -251,9 +230,9 @@ int pmm_first_free_s(size_t size)
 	return -1;
 }
 
+// Funzione che alloca "number" blocchi e ritorna l'indirizzo del primo
 void *pmm_alloc_blocks(size_t number)
 {
-
 	if (pmm_get_free_block_count() <= number)
 		return 0;
 

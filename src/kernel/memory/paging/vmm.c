@@ -179,7 +179,7 @@ struct page_directory *vmm_get_directory()
 }
 
 // Inizializza la vmm impostando come directory corrente
-// Quella del boot
+// la stessa del boot
 void vmm_initialize()
 {
 	// Puntatore che si trova alla base della page dir creata durante il boot

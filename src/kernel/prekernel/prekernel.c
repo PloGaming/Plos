@@ -25,6 +25,8 @@ void prekernel(multiboot_info_t *boot_info)
 	// Inizializzazione del pmm (Physical memory manager)
 	pmm_init(memSize, (uint32_t *)(HIGHER_HALF_PAGING + kernel_size));
 	pmm_init_available_regions(boot_info->mmap_addr, boot_info->mmap_addr + boot_info->mmap_length);
+
+	// Rimuove dalla bit map, tutta l'area del kernel (e oltre)
 	pmm_deinit_region(0x00, 0x0400000);
 
 	// Inizializzazione vmm

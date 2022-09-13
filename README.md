@@ -7,6 +7,9 @@
 - Higher half 32 bit kernel
 - Beginner project
 
+# Screenshot
+
+![alt text](https://cdn.discordapp.com/attachments/994319172530098216/1019287258077069393/Screenshot_21.png)
 
 # Progresso
 
