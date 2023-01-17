@@ -52,16 +52,4 @@
 - [ ] Caricare un programma in memoria
 	- [ ] Analizzare gli header dei file
 	- [ ] Allocare memoria per essi
-- [ ] Implementare le System Calls
-- [ ] Aggiungere una toolchain
-- [ ] Creare delle librerie C
-- [ ] Creare Fork() ed Execute()
-- [ ] Implementare una shell
-
-#### Terza parte - Aggiungere funzioni al sistema operativo
-- [ ] Creare una thread API
-- [ ] Aggiungere la gestione del tempo 
-- [ ] Implementare multithreading
-- [ ] Sviluppo GUI
-- [ ] Aggiungere networking
-- [ ] Implementare il supporto per i suoni
+-......
